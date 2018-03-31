@@ -11,9 +11,15 @@ import com.google.gson.annotations.SerializedName;
 
 public class DomainModel implements Serializable {
 
+
+
     @SerializedName("domainId")
     @Expose
-    private Integer domainId;
+    public Integer domainId;
+
+    @SerializedName("Domains_domainId")
+    @Expose
+    private Integer Domains_domainId;
     @SerializedName("domainTitle")
     @Expose
     private String domainTitle;
@@ -28,11 +34,11 @@ public class DomainModel implements Serializable {
     private List<Object> goals = null;
 
     public Integer getDomainId() {
-        return domainId;
+        return Domains_domainId;
     }
 
-    public void setDomainId(Integer domainId) {
-        this.domainId = domainId;
+    public void setDomainId(Integer Domains_domainId) {
+        this.Domains_domainId = Domains_domainId;
     }
 
     public String getDomainTitle() {

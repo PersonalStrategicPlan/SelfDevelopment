@@ -21,11 +21,13 @@
         android:text="TextView"
         android:textAlignment="center"
         android:textDirection="anyRtl"
-        android:textSize="12sp"
+        android:textSize="18sp"
         android:textStyle="bold"
+        android:longClickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.337" />
 
 </android.support.constraint.ConstraintLayout>

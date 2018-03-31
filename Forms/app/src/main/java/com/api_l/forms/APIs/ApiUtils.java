@@ -2,36 +2,29 @@ package com.api_l.forms.APIs;
 
 import com.api_l.forms.Clients.RetrofitClient;
 
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
-
 public class ApiUtils {
     public static final String BASE_URL = "http://api-l.com/FormApi/";
 
 
-    public static Auth getUserService(){
-        return RetrofitClient.getClient(BASE_URL).create(Auth.class);
+    public static UserService getUserService(){
+        return RetrofitClient.getClient(BASE_URL).create(UserService.class);
     }
-    public static Forms getForms(){
-        return RetrofitClient.getClient(BASE_URL).create(Forms.class);
+    public static FormServices getForms(){
+        return RetrofitClient.getClient(BASE_URL).create(FormServices.class);
     }
-    public static Domains getDomains(){
-        return RetrofitClient.getClient(BASE_URL).create(Domains.class);
+    public static DomainServices getDomains(){
+        return RetrofitClient.getClient(BASE_URL).create(DomainServices.class);
     }
 
-    public static Goals getGoals() {
-        return RetrofitClient.getClient(BASE_URL).create(Goals.class);
+    public static GoalServices getGoals() {
+        return RetrofitClient.getClient(BASE_URL).create(GoalServices.class);
 
     }
-    public  static Answers getAnswers(){
-        return RetrofitClient.getClient(BASE_URL).create(Answers.class);
+    public  static AnswerServices getAnswers(){
+        return RetrofitClient.getClient(BASE_URL).create(AnswerServices.class);
     }
-    public  static Taqeems Taqeem(){
-        return RetrofitClient.getClient(BASE_URL).create(Taqeems.class);
+    public  static TaqeemServices Taqeem(){
+        return RetrofitClient.getClient(BASE_URL).create(TaqeemServices.class);
     }
 
 }

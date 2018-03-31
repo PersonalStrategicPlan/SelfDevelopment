@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import com.api_l.forms.DomainsActivity;
 import com.api_l.forms.FormsActivity;
+import com.api_l.forms.GoalsActivity;
+import com.api_l.forms.Helper.Constants;
 import com.api_l.forms.Models.DomainModel;
 import com.api_l.forms.Models.DomainsIntentModel;
 import com.api_l.forms.Models.FormModel;
@@ -65,11 +67,14 @@ public class FormsAdapter extends ArrayAdapter<FormModel> implements View.OnClic
             DomainsIntentModel intentModel = new DomainsIntentModel();
             intentModel.setDomainModels(domainModels);
                 if(selectedItem !=null){
-                    Intent domainsIntent = new Intent(ctx, DomainsActivity.class);
-                    domainsIntent.putExtra("formid",selectedItem.getFormId());
-                    ctx.startActivity(domainsIntent);
 
-            }
+
+                        Intent domainsIntent = new Intent(ctx, DomainsActivity.class);
+                        domainsIntent.putExtra("formId", selectedItem.getFormId());
+
+                        ctx.startActivity(domainsIntent);
+                    }
+
     }
 
     @NonNull

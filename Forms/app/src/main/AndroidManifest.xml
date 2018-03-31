@@ -33,6 +33,22 @@
         <activity
             android:name=".DomainTaqeem"
             android:label="@string/title_activity_domain_taqeem"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".GoalActivity"
+            android:label="@string/title_activity_goal"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ProfileActivity"
+            android:label="@string/title_activity_profile"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".AdminActivity"
+            android:label="@string/title_activity_admin"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".UserInfoActivity"
+            android:label="@string/title_activity_user_info"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

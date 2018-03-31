@@ -15,31 +15,27 @@ import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.api_l.forms.APIs.Answers;
+import com.api_l.forms.APIs.AnswerServices;
 import com.api_l.forms.APIs.ApiUtils;
-import com.api_l.forms.APIs.Auth;
-import com.api_l.forms.LoginActivity;
 import com.api_l.forms.Models.AnswerModel;
-import com.api_l.forms.Models.AuthModel;
-import com.api_l.forms.Models.UserModel;
 import com.api_l.forms.R;
 
 import java.io.IOException;
-import java.text.Normalizer;
 
 import retrofit2.Call;
 import retrofit2.Response;
 
 
+
 public class FormDialog extends DialogFragment implements NoticeDialogListener, View.OnClickListener {
     private ImageButton soHappyBtn,happyBtn,avreageBtn,notHappyBtn,sadBtn;
-    private Answers answerService;
+    private AnswerServices answerService;
     private ProgressBar progressBar;
+    private boolean isFiveLevels = true;
     private int goalId;
     private SharedPreferences sharedPreferences;
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -80,6 +76,14 @@ public class FormDialog extends DialogFragment implements NoticeDialogListener, 
 
     public void setGoalId(Integer goalId) {
         this.goalId = goalId;
+    }
+
+    public boolean isFiveLevels() {
+        return isFiveLevels;
+    }
+
+    public void setFiveLevels(boolean fiveLevels) {
+        isFiveLevels = fiveLevels;
     }
 
     public class AddAnswerTask extends AsyncTask<Call, Void, AnswerModel> {

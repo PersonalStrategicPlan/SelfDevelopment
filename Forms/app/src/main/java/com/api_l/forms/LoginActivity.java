@@ -6,16 +6,14 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.api_l.forms.APIs.ApiUtils;
-import com.api_l.forms.APIs.Auth;
+import com.api_l.forms.APIs.UserService;
 import com.api_l.forms.Models.AuthModel;
 import com.api_l.forms.Models.UserModel;
 
@@ -25,7 +23,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
-    private Auth authService;
+    private UserService userServiceService;
     private Button loginButn;
     private EditText username, userpass;
     private ProgressBar progressBar;
@@ -39,7 +37,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         username = (EditText) findViewById(R.id.userName);
         userpass = (EditText) findViewById(R.id.userPass);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        authService = ApiUtils.getUserService();
+        userServiceService = ApiUtils.getUserService();
         loginButn.setOnClickListener(this);
         showProgress(false);
 
@@ -77,12 +75,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                     sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor =sharedPreferences.edit();
-                    editor.putInt("UserId",loggedInUser.getUserid());
+                    editor.putInt("UserId",loggedInUser.getUserid().intValue());
+                    editor.putInt("RoleId",loggedInUser.getRolesRolid());
                     editor.putString("UserFullName",loggedInUser.getUserFullName());
+                    editor.putString("UserAcadmicID",loggedInUser.getUserAcadmicID());
+                    editor.putString("QF",loggedInUser.getQf());
+                    editor.putString("EXP",loggedInUser.getExp());
+                    editor.putString("mobile",loggedInUser.getMobile());
+                    editor.putString("sp",loggedInUser.getSp());//empName
+                    editor.putString("email",loggedInUser.getUserEmail());//empName
+                    editor.putString("empName",loggedInUser.getEmpName());//empName
                     editor.commit();
 
 
-               Move();
+               Move(loggedInUser);
                 }
             } else {
                 Toast.makeText(LoginActivity.this, "فضلاً تأكد من بياناتك المدخلة", Toast.LENGTH_LONG).show();
@@ -97,9 +103,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             showProgress(false);
         }
     }
-    private void Move() {
+    private void Move(UserModel loggedInUser) {
+        if(loggedInUser.getRolesRolid().intValue() == 2){
+            Intent toAdminActivity = new Intent(this,AdminActivity.class);
+            startActivity(toAdminActivity);
+
+        }else{
         Intent toFormsActivit = new Intent(this,FormsActivity.class);
         startActivity(toFormsActivit);
+        }
     }
     private void showProgress(boolean show) {
         progressBar.setVisibility(show ==false ? View.GONE : View.VISIBLE);
@@ -109,7 +121,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void doLogin(String userEmail, String userPass) {
         showProgress(true);
         AuthModel userModel = new AuthModel(userEmail, userPass);
-        Call call = authService.Authenticate(userModel);
+        Call call = userServiceService.Authenticate(userModel);
         new UserLoginTask().execute(call);
 
     }
@@ -121,5 +133,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if(v.getId() == R.id.loginBtn){
             doLogin(username.getText().toString(),userpass.getText().toString());
         }
+    }
+    public void onBackPressed() {
+
     }
 }

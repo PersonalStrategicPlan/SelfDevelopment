@@ -20,9 +20,8 @@ import com.api_l.forms.R;
 import java.util.ArrayList;
 
 
-
 public class DomainsAdapter extends ArrayAdapter<DomainModel> implements View.OnClickListener{
-
+private  int d = 0;
 
         private ArrayList<DomainModel> domains = new ArrayList<DomainModel>();
         private int UserId =1 ;
@@ -41,22 +40,25 @@ public class DomainsAdapter extends ArrayAdapter<DomainModel> implements View.On
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.generic_list_adapter, parent, false);
             }
-                DomainModel model = getItem(position);
+                DomainModel model = (DomainModel) getItem(position);
             TextView btn = (TextView) convertView.findViewById(R.id.itemTitle);
             btn.setTag(position);
+
             btn.setText(model.getDomainTitle());
             btn.setOnClickListener(this);
-
+            d= (model.getDomainId()!=null? model.getDomainId():d);
 
             return convertView;
         }
 
         @Override
         public void onClick(View v) {
-            DomainModel selectedItem = getItem((int)v.getTag());
+            DomainModel selectedItem = (DomainModel) getItem((int)v.getTag());
             if(selectedItem !=null){
                 Intent domainsIntent = new Intent(ctx, GoalsActivity.class);
-                domainsIntent.putExtra("domainId",selectedItem.getDomainId());
+                domainsIntent.putExtra("domainId",selectedItem.domainId);
+              // int d = selectedItem.getDomainId();
+                domainsIntent.putExtra("formId",selectedItem.getFormsFormId());
                 ctx.startActivity(domainsIntent);
 
             }

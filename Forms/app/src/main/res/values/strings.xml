@@ -8,4 +8,12 @@
         <item></item>
     </array>
     <string name="title_activity_domain_taqeem">التقييم</string>
+    <string name="addnewgoal">فضلاً اكتب الهدف</string>
+    <string name="goalIndecator">موشر الهدف</string>
+    <string name="save">حفظ</string>
+    <string name="probjectlblTxt">المشاريع</string>
+    <string name="title_activity_goal">البيانات التفصيلية للهدف</string>
+    <string name="title_activity_profile">بياناتي</string>
+    <string name="title_activity_admin">مدير النظام</string>
+    <string name="title_activity_user_info">بيانات العضو</string>
 </resources>

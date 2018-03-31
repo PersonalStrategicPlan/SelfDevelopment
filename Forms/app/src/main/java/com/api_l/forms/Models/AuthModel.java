@@ -1,6 +1,7 @@
 package com.api_l.forms.Models;
 
 
+
 public class AuthModel {
     private String UserAcadmicID;
     private  String UserPass;

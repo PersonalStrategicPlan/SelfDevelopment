@@ -1,10 +1,11 @@
 package com.api_l.forms.Models;
 
+import java.io.Serializable;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class UserModel {
+public class UserModel  implements Serializable{
 
     @SerializedName("userid")
     @Expose
@@ -15,6 +16,25 @@ public class UserModel {
     @SerializedName("UserAcadmicID")
     @Expose
     private String UserAcadmicID;
+    @SerializedName("userSpecilaist")
+    @Expose
+    private String userSpecilaist;
+    @SerializedName("userExp")
+    @Expose
+    private String userExp;
+    @SerializedName("userEmpName")
+    @Expose
+    private String userEmpName;
+    @SerializedName("userMobile")
+    @Expose
+    private String mobile;
+    @SerializedName("userQF")
+    @Expose
+    private String qf;
+    @SerializedName("userEmail")
+    @Expose
+    private String email;
+
     @SerializedName("userPassword")
     @Expose
     private String userPassword;
@@ -28,9 +48,10 @@ public class UserModel {
     @Expose
     private Role role;
 
+    public UserModel(){}
     public UserModel(String userAcadmicID, String userPassword){
-        this.UserAcadmicID = userAcadmicID;
-        this.userPassword = userPassword;
+        this.setUserAcadmicID(userAcadmicID);
+        this.setUserPassword(userPassword);
     }
     public Integer getUserid() {
         return userid;
@@ -49,11 +70,11 @@ public class UserModel {
     }
 
     public String getUserEmail() {
-        return UserAcadmicID;
+        return getUserAcadmicID();
     }
 
     public void setUserEmail(String userEmail) {
-        this.UserAcadmicID = userEmail;
+        this.setUserAcadmicID(userEmail);
     }
 
     public String getUserPassword() {
@@ -88,5 +109,60 @@ public class UserModel {
         this.role = role;
     }
 
+    public String getUserAcadmicID() {
+        return UserAcadmicID;
+    }
+
+    public void setUserAcadmicID(String userAcadmicID) {
+        UserAcadmicID = userAcadmicID;
+    }
+
+    public String getSp() {
+        return userSpecilaist;
+    }
+
+    public void setSp(String userSpecilaist) {
+        this.userSpecilaist = userSpecilaist;
+    }
+
+    public String getExp() {
+        return userExp;
+    }
+
+    public void setuserExp(String userExp) {
+        this.userExp = userExp;
+    }
+
+    public String getEmpName() {
+        return userEmpName;
+    }
+
+    public void setEmpName(String userEmpName) {
+        this.userEmpName = userEmpName;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getQf() {
+        return qf;
+    }
+
+    public void setQf(String qf) {
+        this.qf = qf;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }
 
