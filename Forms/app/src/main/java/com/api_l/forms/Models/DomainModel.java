@@ -1,10 +1,15 @@
 package com.api_l.forms.Models;
 
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class DomainModel {
+public class DomainModel implements Serializable {
 
     @SerializedName("domainId")
     @Expose
@@ -61,5 +66,6 @@ public class DomainModel {
     public void setGoals(List<Object> goals) {
         this.goals = goals;
     }
+
 
 }

@@ -8,9 +8,8 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+
 public class ApiUtils {
-
-
     public static final String BASE_URL = "http://api-l.com/FormApi/";
 
 
@@ -23,4 +22,16 @@ public class ApiUtils {
     public static Domains getDomains(){
         return RetrofitClient.getClient(BASE_URL).create(Domains.class);
     }
+
+    public static Goals getGoals() {
+        return RetrofitClient.getClient(BASE_URL).create(Goals.class);
+
+    }
+    public  static Answers getAnswers(){
+        return RetrofitClient.getClient(BASE_URL).create(Answers.class);
+    }
+    public  static Taqeems Taqeem(){
+        return RetrofitClient.getClient(BASE_URL).create(Taqeems.class);
+    }
+
 }

@@ -1,7 +1,7 @@
 package com.api_l.forms.APIs;
 
 import com.api_l.forms.Models.DomainModel;
-import com.api_l.forms.Models.FormModel;
+import com.api_l.forms.Models.GoalModel;
 
 import java.util.List;
 
@@ -11,8 +11,7 @@ import retrofit2.http.Path;
 
 
 
-public interface Domains {
-    @GET("api/domainssp/{id}")
-    public Call<List<DomainModel>> GetAllDomains(@Path("id") int id);
-
+public interface Goals {
+    @GET("api/goals/{id}")
+    public Call<List<GoalModel>> GetAllDomainGoals(@Path("id") int id);
 }

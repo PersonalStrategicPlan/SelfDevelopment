@@ -3,4 +3,9 @@
     <string name="btnLogintxt">تسجيل دخول</string>
     <string name="title_activity_domains">المجالات</string>
     <string name="title_activity_forms">التمارين</string>
+    <string name="title_activity_goals">الأهداف</string>
+    <array name="colors_options">
+        <item></item>
+    </array>
+    <string name="title_activity_domain_taqeem">التقييم</string>
 </resources>

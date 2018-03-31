@@ -25,6 +25,14 @@
         <activity
             android:name=".FormsActivity"
             android:label="@string/title_activity_forms"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".GoalsActivity"
+            android:label="@string/title_activity_goals"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".DomainTaqeem"
+            android:label="@string/title_activity_domain_taqeem"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

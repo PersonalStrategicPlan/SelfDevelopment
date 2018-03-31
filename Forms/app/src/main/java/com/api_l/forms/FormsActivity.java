@@ -33,7 +33,6 @@ public class FormsActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         progressBar = (ProgressBar) findViewById(R.id.formsProgressBar);
-
         formsApi = ApiUtils.getForms();
         loadAllForms();
 
@@ -50,25 +49,26 @@ public class FormsActivity extends AppCompatActivity {
         @Override
         protected ArrayList<FormModel> doInBackground(Call... params) {
             Call<ArrayList<FormModel>> c = params[0];
+            ArrayList<FormModel> forms = null;
             try {
                 Response<ArrayList<FormModel>> responseBody = c.execute();
-                ArrayList<FormModel> forms =responseBody.body();
+                forms =responseBody.body();
                 return  forms;
             } catch (IOException e) {
                 Toast.makeText(FormsActivity.this, "Try again please!", Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
 
-            return  null;
+            return  forms;
         }
 
         @Override
         protected void onPostExecute(ArrayList<FormModel>  forms) {
             showProgress(false);
             if(forms!=null) {
-              //  listOfForms = (ListView) findViewById(R.id.formsList);
-              //  adapter = new FormsAdapter(getApplicationContext(),forms);
-              //  listOfForms.setAdapter(adapter);
+                listOfForms = (ListView) findViewById(R.id.formsList);
+                adapter = new FormsAdapter(FormsActivity.this,forms);
+                listOfForms.setAdapter(adapter);
                // Toast.makeText(LoginActivity.this, "Hi " + loggedInUser.getUserFullName(), Toast.LENGTH_LONG).show();
             }else {
                 Toast.makeText(FormsActivity.this, "Not Found", Toast.LENGTH_LONG).show();

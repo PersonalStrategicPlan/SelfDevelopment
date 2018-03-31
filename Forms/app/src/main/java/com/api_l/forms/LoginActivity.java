@@ -1,6 +1,8 @@
 package com.api_l.forms;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,9 +29,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private Button loginButn;
     private EditText username, userpass;
     private ProgressBar progressBar;
+    SharedPreferences sharedPreferences;
 
     @Override
-    //utilizing variabuls
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -47,29 +49,47 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         @Override
         protected UserModel doInBackground(Call... params) {
             Call<UserModel> c = params[0];
+
+            Response<UserModel> responseBody = null;
             try {
-                Response<UserModel> responseBody = c.execute();
+                responseBody = c.execute();
                 UserModel loggedInUser =responseBody.body();
                 return  loggedInUser;
-            } catch (IOException e) {
-                Toast.makeText(LoginActivity.this, "Try again please!", Toast.LENGTH_LONG).show();
 
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-            return  null;
+
+
+            return  new UserModel("","");
         }
 
         @Override
         protected void onPostExecute(UserModel  loggedInUser) {
             showProgress(false);
             if(loggedInUser!=null) {
-                Log.d("OBJECT: ", loggedInUser.getUserFullName());
-                Toast.makeText(LoginActivity.this, "مرحبا بك " + loggedInUser.getUserFullName(), Toast.LENGTH_LONG).show();
-               // Move();
-            }else {
-                Toast.makeText(LoginActivity.this, "Not Found", Toast.LENGTH_LONG).show();
+                if(loggedInUser.getUserFullName() == null){
+                    Toast.makeText(LoginActivity.this, "حاول مرة أخرى هناك مشكلة بالاتصال", Toast.LENGTH_LONG).show();
+                }
+              //  Log.d("OBJECT: ", loggedInUser.getUserFullName());
+                else{
+                    Toast.makeText(LoginActivity.this, "مرحبا بك " + loggedInUser.getUserFullName(), Toast.LENGTH_LONG).show();
+
+                    sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor =sharedPreferences.edit();
+                    editor.putInt("UserId",loggedInUser.getUserid());
+                    editor.putString("UserFullName",loggedInUser.getUserFullName());
+                    editor.commit();
+
+
+               Move();
+                }
+            } else {
+                Toast.makeText(LoginActivity.this, "فضلاً تأكد من بياناتك المدخلة", Toast.LENGTH_LONG).show();
             }
         }
+
+
 
         @Override
         protected void onCancelled() {
@@ -77,28 +97,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             showProgress(false);
         }
     }
-
-    //move from page to page using intent class
     private void Move() {
         Intent toFormsActivit = new Intent(this,FormsActivity.class);
         startActivity(toFormsActivit);
     }
-
-    //loader for loading icon(hide or visible)
     private void showProgress(boolean show) {
         progressBar.setVisibility(show ==false ? View.GONE : View.VISIBLE);
+
     }
 
-    //doing login (username, password)
-    public void doLogin(String userName, String userPass) {
+    public void doLogin(String userEmail, String userPass) {
         showProgress(true);
-        AuthModel userModel = new AuthModel(userName, userPass);
+        AuthModel userModel = new AuthModel(userEmail, userPass);
         Call call = authService.Authenticate(userModel);
         new UserLoginTask().execute(call);
 
     }
 
-    //when press enter class login method
+
+
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.loginBtn){

@@ -17,7 +17,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
-        android:hint="اسم المستخدم"
+        android:hint="الرقم الأكاديمي"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/userPass"
         app:layout_constraintHorizontal_bias="0.503"

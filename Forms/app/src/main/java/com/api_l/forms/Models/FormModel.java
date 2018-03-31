@@ -1,10 +1,12 @@
 package com.api_l.forms.Models;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class FormModel {
+public class FormModel implements Serializable{
 
     @SerializedName("formId")
     @Expose
@@ -14,7 +16,7 @@ public class FormModel {
     private String formTitle;
     @SerializedName("domains")
     @Expose
-    private List<Object> domains = null;
+    private ArrayList<DomainModel> domains = null;
 
     public Integer getFormId() {
         return formId;
@@ -32,11 +34,11 @@ public class FormModel {
         this.formTitle = formTitle;
     }
 
-    public List<Object> getDomains() {
+    public ArrayList<DomainModel> getDomains() {
         return domains;
     }
 
-    public void setDomains(List<Object> domains) {
+    public void setDomains(ArrayList<DomainModel> domains) {
         this.domains = domains;
     }
 

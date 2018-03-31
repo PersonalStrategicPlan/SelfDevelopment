@@ -1,7 +1,8 @@
 package com.api_l.forms.Models;
 
+
 public class AuthModel {
-    private String UserEmail;
+    private String UserAcadmicID;
     private  String UserPass;
 
     public AuthModel(String s, String s1) {
@@ -11,11 +12,11 @@ public class AuthModel {
 
 
     public String getUserEmail() {
-        return UserEmail;
+        return UserAcadmicID;
     }
 
     public void setUserEmail(String userEmail) {
-        UserEmail = userEmail;
+        UserAcadmicID = userEmail;
     }
 
     public String getUserPass() {

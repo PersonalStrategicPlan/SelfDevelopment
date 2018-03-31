@@ -12,9 +12,9 @@ public class UserModel {
     @SerializedName("userFullName")
     @Expose
     private String userFullName;
-    @SerializedName("userEmail")
+    @SerializedName("UserAcadmicID")
     @Expose
-    private String userEmail;
+    private String UserAcadmicID;
     @SerializedName("userPassword")
     @Expose
     private String userPassword;
@@ -28,8 +28,8 @@ public class UserModel {
     @Expose
     private Role role;
 
-    public UserModel(String userEmail, String userPassword){
-        this.userEmail = userEmail;
+    public UserModel(String userAcadmicID, String userPassword){
+        this.UserAcadmicID = userAcadmicID;
         this.userPassword = userPassword;
     }
     public Integer getUserid() {
@@ -49,11 +49,11 @@ public class UserModel {
     }
 
     public String getUserEmail() {
-        return userEmail;
+        return UserAcadmicID;
     }
 
     public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
+        this.UserAcadmicID = userEmail;
     }
 
     public String getUserPassword() {
