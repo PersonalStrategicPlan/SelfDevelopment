@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 
-
 public class DomainsIntentModel implements Serializable{
     private ArrayList<DomainModel> domainModels;
 

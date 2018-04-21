@@ -17,9 +17,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 
-/**
- * Created by ahmed on 2/20/18.
- */
+
 
 public interface UserService {
 

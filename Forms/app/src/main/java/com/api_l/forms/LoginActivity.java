@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -67,11 +68,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             showProgress(false);
             if(loggedInUser!=null) {
                 if(loggedInUser.getUserFullName() == null){
-                    Toast.makeText(LoginActivity.this, "حاول مرة أخرى هناك مشكلة بالاتصال", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this, getResources().getString(R.string.connectionError), Toast.LENGTH_LONG).show();
                 }
-              //  Log.d("OBJECT: ", loggedInUser.getUserFullName());
+
                 else{
-                    Toast.makeText(LoginActivity.this, "مرحبا بك " + loggedInUser.getUserFullName(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this, getResources().getString(R.string.WelcomeMessage) +" "+ loggedInUser.getUserFullName(), Toast.LENGTH_LONG).show();
 
                     sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor =sharedPreferences.edit();
@@ -82,16 +83,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     editor.putString("QF",loggedInUser.getQf());
                     editor.putString("EXP",loggedInUser.getExp());
                     editor.putString("mobile",loggedInUser.getMobile());
-                    editor.putString("sp",loggedInUser.getSp());//empName
-                    editor.putString("email",loggedInUser.getUserEmail());//empName
-                    editor.putString("empName",loggedInUser.getEmpName());//empName
+                    editor.putString("sp",loggedInUser.getSp());
+                    editor.putString("email",loggedInUser.getEmail());
+                    editor.putString("empName",loggedInUser.getEmpName());
                     editor.commit();
 
 
                Move(loggedInUser);
                 }
             } else {
-                Toast.makeText(LoginActivity.this, "فضلاً تأكد من بياناتك المدخلة", Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginActivity.this, getResources().getString(R.string.DataInvalid), Toast.LENGTH_LONG).show();
             }
         }
 
@@ -103,7 +104,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             showProgress(false);
         }
     }
-    private void Move(UserModel loggedInUser) {
+
+    @VisibleForTesting
+    public void Move(UserModel loggedInUser) {
         if(loggedInUser.getRolesRolid().intValue() == 2){
             Intent toAdminActivity = new Intent(this,AdminActivity.class);
             startActivity(toAdminActivity);
@@ -117,13 +120,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         progressBar.setVisibility(show ==false ? View.GONE : View.VISIBLE);
 
     }
+    @VisibleForTesting
+    public void doLogin(String userName, String userPass) {
+        if(userName.length() == 0  || userPass.length() == 0){
+            Toast.makeText(this,getResources().getString(R.string.EmptyFieldErrorMsg),Toast.LENGTH_SHORT).show();
 
-    public void doLogin(String userEmail, String userPass) {
-        showProgress(true);
-        AuthModel userModel = new AuthModel(userEmail, userPass);
-        Call call = userServiceService.Authenticate(userModel);
-        new UserLoginTask().execute(call);
-
+        }else {
+            showProgress(true);
+            AuthModel userModel = new AuthModel(userName, userPass);
+            Call call = userServiceService.Authenticate(userModel);
+            new UserLoginTask().execute(call);
+        }
     }
 
 

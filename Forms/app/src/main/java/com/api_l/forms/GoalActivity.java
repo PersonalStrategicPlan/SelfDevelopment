@@ -1,15 +1,19 @@
 package com.api_l.forms;
 
+import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,9 +27,12 @@ import android.widget.Toast;
 
 import com.api_l.forms.APIs.ApiUtils;
 import com.api_l.forms.APIs.GoalServices;
+import com.api_l.forms.Dialogs.AddNewGoalDialog;
+import com.api_l.forms.Dialogs.ChoseInsertedGoalDialog;
 import com.api_l.forms.ListAdapters.GoalsAdapter;
 import com.api_l.forms.Models.GoalModel;
 import com.api_l.forms.Models.GoalsMetaDatum;
+import com.api_l.forms.Models.UserModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,6 +48,8 @@ public class GoalActivity extends AppCompatActivity implements View.OnClickListe
     private Button updateBtn,deleteBtn;
     private GoalServices goalServices;
     private SharedPreferences sharedPreferences;
+    private String title = "";
+    private  int RoleId =1;
 
     private ProgressBar progressBar;
     public GoalActivity(){}
@@ -58,14 +67,11 @@ public class GoalActivity extends AppCompatActivity implements View.OnClickListe
         progressBar = (ProgressBar) findViewById(R.id.goalProgressBar);
         showProgress(false);
         goalServices = ApiUtils.getGoals();
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
+        title = (String) getIntent().getStringExtra("title");
+
+        sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        RoleId = sharedPreferences.getInt("RoleId",0);
+
         goalbody = (EditText) findViewById(R.id.goalBody);
         indecatorTxt = (EditText) findViewById(R.id.indecatorTxt);
         prj1txt = (EditText) findViewById(R.id.prj1Txt);
@@ -79,6 +85,7 @@ public class GoalActivity extends AppCompatActivity implements View.OnClickListe
 
         deleteBtn = (Button) findViewById(R.id.deletebtn);
         updateBtn = (Button) findViewById(R.id.updatebtn);
+
         deleteBtn.setClickable(false);
         updateBtn.setClickable(false);
         if(goalModel !=null){
@@ -116,10 +123,9 @@ public class GoalActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         this.sharedPreferences  = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
-        int roleId = sharedPreferences.getInt("RoleId",1);
-        if(roleId>1){
-            updateBtn.setEnabled(false);
-            deleteBtn.setEnabled(false);
+       if(RoleId>1){
+            updateBtn.setVisibility(View.GONE);
+            deleteBtn.setVisibility(View.GONE);
         }
     }
     private void showProgress(boolean show) {
@@ -193,6 +199,7 @@ public class GoalActivity extends AppCompatActivity implements View.OnClickListe
                 Call call = goalServices.DeleteGoal(goalModel.getGoalId());
                 new GoalDeleteTask().execute(call);
                 break;
+
         }
     }
 
@@ -206,7 +213,6 @@ public class GoalActivity extends AppCompatActivity implements View.OnClickListe
                 domainGoals =responseBody.body();
                 return  domainGoals;
             } catch (IOException e) {
-                //  Toast.makeText(FormsActivity.this, "Try again please!", Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
 
@@ -240,7 +246,6 @@ public class GoalActivity extends AppCompatActivity implements View.OnClickListe
 
                 return  responseBody.isSuccessful();
             } catch (IOException e) {
-                //  Toast.makeText(FormsActivity.this, "Try again please!", Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
 
@@ -267,7 +272,7 @@ public class GoalActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = new Intent(this,GoalsActivity.class);
         intent.putExtra("domainId",goalModel.getDomains_domainId());
         intent.putExtra("formId",goalModel.getFormsFormId());
-
+        intent.putExtra("title", title);
         startActivity(intent);
     }
 
@@ -292,22 +297,35 @@ public class GoalActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.user_options, menu);
+        if(RoleId >1){
+            inflater.inflate(R.menu.admin_options,menu);
+        }else{
+            inflater.inflate(R.menu.user_options, menu);
+        }
         return true;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
         switch (item.getItemId()) {
             case R.id.profile:
                 MoveToProfile();
                 return true;
+            case  R.id.colormeaning:
+                ShowColorMeaningDialog();
+                return  true;
             case R.id.logout:
                 Logout();
                 return true;
+            case  R.id.forms:
+                MoveToForms();
+                return  true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+    private void MoveToForms() {
+        Intent toFormsActivit = new Intent(this,FormsActivity.class);
+        startActivity(toFormsActivit);
     }
 
     private void Logout() {
@@ -317,9 +335,40 @@ public class GoalActivity extends AppCompatActivity implements View.OnClickListe
         startActivity(i);
 
     }
+    private void ShowColorMeaningDialog() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.color_meaning_dialog, null);
+        dialogBuilder.setView(dialogView);
+
+        dialogBuilder.setTitle("معاني ألوان التقييم");
+        dialogBuilder.setNegativeButton("إخفاء", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        AlertDialog b = dialogBuilder.create();
+        b.show();
+    }
+
 
     private void MoveToProfile() {
-        Intent  i = new Intent(this,ProfileActivity.class);
+        sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        int userId = sharedPreferences.getInt("UserId",0);
+        SharedPreferences.Editor editor =sharedPreferences.edit();
+        editor.putInt("Target",userId);
+        editor.commit();
+        UserModel model = new UserModel();
+        model.setUserid(sharedPreferences.getInt("UserId",0));
+        model.setUserFullName(sharedPreferences.getString("UserFullName",""));
+        model.setUserAcadmicID(sharedPreferences.getString("UserAcadmicID",""));
+        model.setEmail(sharedPreferences.getString("email",""));
+        model.setQf(sharedPreferences.getString("QF",""));
+        model.setuserExp(sharedPreferences.getString("EXP",""));
+        model.setEmpName(sharedPreferences.getString("empName",""));
+        model.setSp(sharedPreferences.getString("sp",""));
+        model.setMobile(sharedPreferences.getString("mobile",""));
+        Intent  i = new Intent(this,UserInfoActivity.class);
+        i.putExtra("userModel",model);
         startActivity(i);
     }
 

@@ -37,10 +37,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_margin="16dp"
         android:clickable="true"
-        app:fabSize="mini"
+        android:tooltipText="عرض التقييمات على مستوى النموذج"
         app:layout_anchor="@+id/include2"
-        app:layout_anchorGravity="bottom|right"
-        app:srcCompat="@android:drawable/ic_menu_search" />
+        app:layout_anchorGravity="right|bottom"
+        app:srcCompat="@android:drawable/checkbox_on_background" />
 
 </android.support.design.widget.CoordinatorLayout>

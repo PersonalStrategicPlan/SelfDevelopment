@@ -3,6 +3,7 @@ package com.api_l.forms.ListAdapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -46,14 +47,30 @@ public class FormsAdapter extends ArrayAdapter<FormModel> implements View.OnClic
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.generic_list_adapter, parent, false);
         }
-       // if(models.size()>0){
+
+
             FormModel model = getItem(position);
+        switch (model.getFormId()){
+            case 1:
+            convertView.setBackgroundColor(Constants.Form_1_Color);
+                break;
+            case 2:
+                convertView.setBackgroundColor(Constants.Form_2_Color);
+                break;
+            case 3:
+                convertView.setBackgroundColor(Constants.Form_3_Color);
+                break;
+            case 4:
+                convertView.setBackgroundColor(Constants.Form_4_Color);
+                break;
+        }
+
         TextView btn = (TextView) convertView.findViewById(R.id.itemTitle);
         btn.setText(model.getFormTitle());
 
             btn.setTag(position);
             btn.setOnClickListener(this);
-     //   }
+
 
         return convertView;
     }
@@ -62,10 +79,9 @@ public class FormsAdapter extends ArrayAdapter<FormModel> implements View.OnClic
     public void onClick(View v) {
 
                 FormModel selectedItem = getItem((int)v.getTag());
-           //   ArrayList<DomainModel> domainsForm = getDomainModels(selectedItem);
-            ArrayList<DomainModel> domainModels = selectedItem.getDomains();
-            DomainsIntentModel intentModel = new DomainsIntentModel();
-            intentModel.setDomainModels(domainModels);
+                ArrayList<DomainModel> domainModels = selectedItem.getDomains();
+                DomainsIntentModel intentModel = new DomainsIntentModel();
+                intentModel.setDomainModels(domainModels);
                 if(selectedItem !=null){
 
 

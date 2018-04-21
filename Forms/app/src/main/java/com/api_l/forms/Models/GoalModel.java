@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.List;
 
 
+
 public class GoalModel implements Serializable {
     @SerializedName("goalId")
     @Expose

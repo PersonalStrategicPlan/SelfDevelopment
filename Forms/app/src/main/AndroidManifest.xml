@@ -23,6 +23,10 @@
             android:label="@string/title_activity_domains"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".LoginTestActivity"
+            android:label="LoginTest"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".FormsActivity"
             android:label="@string/title_activity_forms"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -49,7 +53,7 @@
         <activity
             android:name=".UserInfoActivity"
             android:label="@string/title_activity_user_info"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

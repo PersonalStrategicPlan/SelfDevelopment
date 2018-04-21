@@ -10,6 +10,8 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
+
+
 public interface TaqeemServices {
     @GET("api/Taqeem")
     public Call<TaqeemModel> GetDomainTaqeem(@Query("userid") int id, @Query("domainId") int domainid);

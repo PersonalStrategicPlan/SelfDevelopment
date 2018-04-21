@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.app.usage.ConfigurationStats;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 
 import com.api_l.forms.APIs.AnswerServices;
 import com.api_l.forms.APIs.ApiUtils;
+import com.api_l.forms.Helper.Constants;
 import com.api_l.forms.Models.AnswerModel;
 import com.api_l.forms.R;
 
@@ -28,7 +30,6 @@ import java.io.IOException;
 
 import retrofit2.Call;
 import retrofit2.Response;
-
 
 
 public class FormDialog extends DialogFragment implements NoticeDialogListener, View.OnClickListener {
@@ -42,7 +43,6 @@ public class FormDialog extends DialogFragment implements NoticeDialogListener, 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        // Use the Builder class for convenient dialog construction
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity().getApplicationContext());
         View promptView = layoutInflater.inflate(R.layout.form_dialog_layout, null);
 
@@ -65,7 +65,7 @@ public class FormDialog extends DialogFragment implements NoticeDialogListener, 
                 .setView(promptView)
                 .setPositiveButton("رجوع", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // FIRE ZE MISSILES!
+
                         onDialogPositiveClick(FormDialog.this);
                     }
                 });
@@ -110,16 +110,16 @@ public class FormDialog extends DialogFragment implements NoticeDialogListener, 
             showProgress(false);
             if(insertedAnswer!=null) {
                 if(insertedAnswer.getColor() > 0){
-                    Toast.makeText(getActivity(), "تم التقييم بنجاح", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getResources().getString(R.string.EvaluationDone), Toast.LENGTH_LONG).show();
                 }
-                //  Log.d("OBJECT: ", loggedInUser.getUserFullName());
-                else{
-                    Toast.makeText(getActivity(), "هذا الهدف قد تم تقييمه من قبل ٫ تم تحديث التقييم " , Toast.LENGTH_LONG).show();
 
-                   // Move();
+                else{
+                    Toast.makeText(getActivity(), getResources().getString(R.string.EvaluationUpdated) , Toast.LENGTH_LONG).show();
+
+
                 }
             } else {
-                Toast.makeText(getActivity(), "فضلاً حاول مرة أخرى", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), getResources().getString(R.string.TryAgain), Toast.LENGTH_LONG).show();
             }
         }
 
@@ -141,13 +141,11 @@ public class FormDialog extends DialogFragment implements NoticeDialogListener, 
         super.onAttach(activity);
 
 
-        // Verify that the host activity implements the callback interface
         try {
-            // Instantiate the NoticeDialogListener so we can send events to the host
+
             NoticeDialogListener mn = (NoticeDialogListener) activity;
         } catch (ClassCastException e) {
-            // The activity doesn't implement the interface, throw exception
-            throw new ClassCastException(activity.toString()
+                       throw new ClassCastException(activity.toString()
                     + " must implement NoticeDialogListener");
         }
     }
@@ -163,23 +161,28 @@ public class FormDialog extends DialogFragment implements NoticeDialogListener, 
     }
 
     @Override
+    public void GoalSelected(String value) {
+
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()){
             case  R.id.SoHappyBtn:
-                addAnswer(25);
+                addAnswer(Constants.SoHappyRank);
                 break;
             case R.id.HappyBtn:
-addAnswer(20);
+                addAnswer(Constants.HappyRank);
                 break;
             case R.id.AverageBtn:
-                addAnswer(15);
+                addAnswer(Constants.AvarageRank);
                 break;
             case R.id.NotHappyBtn:
-addAnswer(10);
+                addAnswer(Constants.NotHappyRank);
                 break;
             case R.id.SadBtn:
-addAnswer(5);
-   break;
+                addAnswer(Constants.SadRank);
+                break;
         }
 
     }
@@ -192,7 +195,6 @@ addAnswer(5);
         answerModel.setColor(color);
         answerModel.setGoals_goalId(this.goalId);
         answerModel.setUsers_userid(userid);
-
         Call call = answerService.AddAnswer(answerModel);
         new AddAnswerTask().execute(call);
 

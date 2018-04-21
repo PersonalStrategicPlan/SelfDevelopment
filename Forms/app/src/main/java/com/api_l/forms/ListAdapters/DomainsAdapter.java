@@ -2,6 +2,7 @@ package com.api_l.forms.ListAdapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.api_l.forms.Models.FormModel;
 import com.api_l.forms.R;
 
 import java.util.ArrayList;
+
 
 
 public class DomainsAdapter extends ArrayAdapter<DomainModel> implements View.OnClickListener{
@@ -41,6 +43,20 @@ private  int d = 0;
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.generic_list_adapter, parent, false);
             }
                 DomainModel model = (DomainModel) getItem(position);
+            switch (model.getFormsFormId()){
+                case 1:
+                    convertView.setBackgroundColor(Color.parseColor("#f1ffcc"));
+                    break;
+                case 2:
+                    convertView.setBackgroundColor(Color.parseColor("#ccdbff"));
+                    break;
+                case 3:
+                    convertView.setBackgroundColor(Color.parseColor("#ffccda"));
+                    break;
+                case 4:
+                    convertView.setBackgroundColor(Color.parseColor("#f8f6f6"));
+                    break;
+            }
             TextView btn = (TextView) convertView.findViewById(R.id.itemTitle);
             btn.setTag(position);
 
@@ -56,8 +72,9 @@ private  int d = 0;
             DomainModel selectedItem = (DomainModel) getItem((int)v.getTag());
             if(selectedItem !=null){
                 Intent domainsIntent = new Intent(ctx, GoalsActivity.class);
+                domainsIntent.putExtra("title",selectedItem.getDomainTitle());
                 domainsIntent.putExtra("domainId",selectedItem.domainId);
-              // int d = selectedItem.getDomainId();
+
                 domainsIntent.putExtra("formId",selectedItem.getFormsFormId());
                 ctx.startActivity(domainsIntent);
 

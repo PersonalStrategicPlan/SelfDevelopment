@@ -3,17 +3,21 @@ package com.api_l.forms.Dialogs;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,25 +30,31 @@ import com.api_l.forms.Models.GoalsMetaDatum;
 import com.api_l.forms.R;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Response;
 
+
+
 public class AddNewGoalDialog extends DialogFragment implements NoticeDialogListener, View.OnClickListener {
     private ProgressBar progressBar;
     private int goalId;
-    private Button saveBtn;
+    private Button saveBtn,choseBtn;
     private GoalServices goalServices;
     private EditText goalBody,goalIndecator,project1,project2,project3;
     private Integer formId,domainId;
+    private TextView writeGoalTxt;
     private int userId = 0;
-
+    private SharedPreferences sharedPreferences;
+    private ArrayList<GoalModel> insertedGoals = new ArrayList<>();
     private TextView txtIndecator ,projectslbl;
-    public AddNewGoalDialog(int userId, Integer formId, Integer domainId) {
+    public AddNewGoalDialog(int userId, Integer formId, Integer domainId, ArrayList<GoalModel> goals) {
         this.userId = userId;
         this.domainId = domainId;
         this.formId =formId;
+        this.insertedGoals = goals;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -56,12 +66,26 @@ public class AddNewGoalDialog extends DialogFragment implements NoticeDialogList
         goalServices = ApiUtils.getGoals();
         progressBar = (ProgressBar) promptView.findViewById(R.id.addnewgoalProgressbar);
         goalBody = (EditText) promptView.findViewById(R.id.goalbodytxt);
+        goalBody.setEnabled(false);
         goalIndecator =(EditText) promptView.findViewById(R.id.goalindecator);
         txtIndecator = (TextView) promptView.findViewById(R.id.textView3);
         projectslbl = (TextView) promptView.findViewById(R.id.projectsLbl);
         project1 = (EditText) promptView.findViewById(R.id.project1);
         project2 = (EditText) promptView.findViewById(R.id.project2);
         project3 = (EditText) promptView.findViewById(R.id.project3);
+        writeGoalTxt = (TextView) promptView.findViewById(R.id.writeGoallbl);
+        choseBtn = (Button) promptView.findViewById(R.id.choseGoalBtn);
+        choseBtn.setVisibility(View.GONE);
+        goalBody.setEnabled(true);
+
+        writeGoalTxt.setText("فضلاً اكتب الهدف");
+        if(domainId == 22){
+            choseBtn.setVisibility(View.VISIBLE);
+            writeGoalTxt.setText("فضلاً اختر الهدف");
+            goalBody.setEnabled(false);
+
+        }
+        choseBtn.setOnClickListener(this);
         if(formId == 3){
             goalIndecator.setVisibility(View.GONE);
             txtIndecator.setVisibility(View.GONE);
@@ -69,6 +93,8 @@ public class AddNewGoalDialog extends DialogFragment implements NoticeDialogList
             project1.setVisibility(View.GONE);
             project2.setVisibility(View.GONE);
             project3.setVisibility(View.GONE);
+            choseBtn.setVisibility(View.GONE);
+
         }
 
         showProgress(false);
@@ -86,7 +112,9 @@ public class AddNewGoalDialog extends DialogFragment implements NoticeDialogList
         return builder.create();
     }
         @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
+    public void onDialogPositiveClick(DialogFragment dialog)
+        {
+
 
     }
 
@@ -96,20 +124,33 @@ public class AddNewGoalDialog extends DialogFragment implements NoticeDialogList
     }
 
     @Override
+    public void GoalSelected(String value) {
+        goalBody.setText(value);
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()){
             case  R.id.savebtn:
                 addGoal();
                 break;
+            case R.id.choseGoalBtn:
+                Log.d("clicked","Here");
+                FragmentManager fm = getFragmentManager();
+                ChoseInsertedGoalDialog f = new ChoseInsertedGoalDialog();
+                f.setListener(this);
+
+                f.show(fm, "flag11");
+                break;
         }
     }
 
     private  void addGoal(){
-        showProgress(true);
-        if(!checkProjectsEditTxt() && formId == 4){
+
+        if(!checkProjectsEditTxt(formId) && formId == 4){
             showProgress(false);
-            Toast.makeText(getActivity(),"يجب إدخال مشروع واحد على الأقل",Toast.LENGTH_SHORT).show();
-        }else {
+          }else {
+            if(checkProjectsEditTxt(formId)){
             GoalModel goal = new GoalModel();
             goal.setUsers_userid(userId);
 
@@ -147,20 +188,53 @@ public class AddNewGoalDialog extends DialogFragment implements NoticeDialogList
 
                 goal.setGoalsMetaData(goalsMetaData);
             }
+                showProgress(true);
 
-
-            Call call = goalServices.AddNewGoal(goal);
+                if(!checkGoalIsNotExist(goalBody.getText().toString())){
+                Call call = goalServices.AddNewGoal(goal);
             new LoadFormsTask().execute(call);
+                }else {
+                    showProgress(false);
+                    Toast.makeText(getActivity(),getResources().getString(R.string.GoalAreadyExist), Toast.LENGTH_SHORT).show();
+                }
+            }
         }
 
     }
 
-    private boolean checkProjectsEditTxt() {
-        if(project1.getText().length() >0 || project2.getText().length() >0 || project3.getText().length() >0){
-
-            return  true;
+    private boolean checkGoalIsNotExist(String s) {
+        boolean isExist = false;
+        for(GoalModel goal : insertedGoals){
+            if(goal.getGoal1().equals(s)){
+                isExist =  true;
+            }
         }
-        return  false;
+        return  isExist;
+
+    }
+
+    private boolean checkProjectsEditTxt(int formId) {
+        boolean isValid = true;
+        if(formId == Constants.FORM_4) {
+            if (!(goalBody.getText().length() > 0)) {
+                Toast.makeText(getActivity(), getResources().getString(R.string.GoalShouldBeNotNull), Toast.LENGTH_LONG).show();
+                isValid = false;
+            } else if (!(goalIndecator.getText().length() > 0)) {
+                Toast.makeText(getActivity(), getResources().getString(R.string.IndecatroIsRequired), Toast.LENGTH_LONG).show();
+                isValid = false;
+            } else if (!(project1.getText().length() > 0 || project2.getText().length() > 0 || project3.getText().length() > 0)) {
+                Toast.makeText(getActivity(), getResources().getString(R.string.AtLeastGoalRequired), Toast.LENGTH_LONG).show();
+                isValid = false;
+            }
+        }else {
+            if (!(goalBody.getText().length() > 0)) {
+                Toast.makeText(getActivity(), getResources().getString(R.string.GoalShouldBeNotNull), Toast.LENGTH_LONG).show();
+                isValid = false;
+            }
+        }
+
+            return  isValid;
+
     }
 
     public class LoadFormsTask extends AsyncTask<Call, Void, GoalModel> {
@@ -173,7 +247,6 @@ public class AddNewGoalDialog extends DialogFragment implements NoticeDialogList
                 insertedGoal =responseBody.body();
                 return  insertedGoal;
             } catch (IOException e) {
-                //  Toast.makeText(FormsActivity.this, "Try again please!", Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
 
@@ -184,16 +257,12 @@ public class AddNewGoalDialog extends DialogFragment implements NoticeDialogList
         protected void onPostExecute(GoalModel  goal) {
             showProgress(false);
             if(goalServices !=null) {
-                // Toast.makeText(getActivity(), "تم الحفظ بنجاح", Toast.LENGTH_LONG).show();
-
-
                 Intent domainsIntent = new Intent(getActivity(), GoalsActivity.class);
                 domainsIntent.putExtra("domainId",domainId);
-                // int d = selectedItem.getDomainId();
                 domainsIntent.putExtra("formId",formId);
                 getActivity().startActivity(domainsIntent);
             }else {
-                Toast.makeText(getActivity(), "لم يتم الحفظ !", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), getResources().getString(R.string.SaveProccessIsValid), Toast.LENGTH_LONG).show();
             }
         }
 

@@ -1,13 +1,16 @@
 package com.api_l.forms;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +24,7 @@ import com.api_l.forms.APIs.ApiUtils;
 import com.api_l.forms.APIs.DomainServices;
 import com.api_l.forms.ListAdapters.DomainsAdapter;
 import com.api_l.forms.Models.DomainModel;
+import com.api_l.forms.Models.UserModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,9 +38,11 @@ public class DomainsActivity extends AppCompatActivity implements View.OnClickLi
     private ListView listOfDomains;
     private ProgressBar progressBar;
     private int formId =0;
+    private String title ="";
     private SharedPreferences sharedPreferences;
+    private int RoleId = 1;
 
-    // private DomainsIntentModel domainModels = new DomainsIntentModel();
+
     private DomainServices domainServices;
     private ArrayList<DomainModel> dominsList = new ArrayList<DomainModel>();
     @Override
@@ -46,14 +52,18 @@ public class DomainsActivity extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_domains);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        RoleId = sharedPreferences.getInt("RoleId",0);
+
         progressBar = (ProgressBar) findViewById(R.id.domainsProgressBar);
 
         formId = (int) getIntent().getIntExtra("formId",0);
+        ChangeActivityTitle();
         domainServices = ApiUtils.getDomains();
         loadAllFormDomain(formId);
-       // Toast.makeText(getApplicationContext(),"Form iD"+formId,Toast.LENGTH_LONG).show();
+
        listOfDomains = (ListView) findViewById(R.id.domainsList);
-//        listOfDomains.setOnItemClickListener(this);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.DomainsTaqeemFab);
         if(formId == 4 || formId == 3){
@@ -63,14 +73,32 @@ public class DomainsActivity extends AppCompatActivity implements View.OnClickLi
 
 
         fab.setOnClickListener(this);
-      //  goalServices = ApiUtils.getGoals();
-       // loadAllGoals(formId,domainId,isDomain);
 
-
-        //  adapter = new DomainsAdapter(getApplicationContext(),domainModels.getDomainModels());
-      // listOfDomains.setAdapter(adapter);
 
     }
+
+    private void ChangeActivityTitle() {
+        switch (formId){
+            case 1:
+                title = "مجالات النموذج الأول";
+                this.setTitle(title);
+
+                break;
+            case 2:
+                title ="مجالات النموذج الثاني";
+                this.setTitle(title);
+                break;
+            case 3:
+                title = "مجالات النموذج الثالث";
+                this.setTitle(title);
+                break;
+            case 4:
+                title  = "مجالات النموذج الرابع";
+                this.setTitle(title);
+                break;
+        }
+    }
+
     public void loadAllFormDomain(int formId){
     Call call = domainServices.GetAllDomains(formId);
         new LoadFormsTask().execute(call);
@@ -82,10 +110,11 @@ public class DomainsActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()){
         case  R.id.DomainsTaqeemFab:
-        // showProgress(true);
+
         Intent taqeemIntent = new Intent(this,DomainTaqeem.class);
         taqeemIntent.putExtra("formId",formId);
         taqeemIntent.putExtra("isFormTaqeem",true);
+        taqeemIntent.putExtra("title",title);
         startActivity(taqeemIntent);
         break;
         }
@@ -101,7 +130,7 @@ public class DomainsActivity extends AppCompatActivity implements View.OnClickLi
             forms =responseBody.body();
             return  forms;
         } catch (IOException e) {
-          //  Toast.makeText(FormsActivity.this, "Try again please!", Toast.LENGTH_LONG).show();
+
             e.printStackTrace();
         }
 
@@ -115,7 +144,7 @@ public class DomainsActivity extends AppCompatActivity implements View.OnClickLi
             listOfDomains = (ListView) findViewById(R.id.domainsList);
             adapter = new DomainsAdapter(DomainsActivity.this,forms);
             listOfDomains.setAdapter(adapter);
-            // Toast.makeText(LoginActivity.this, "Hi " + loggedInUser.getUserFullName(), Toast.LENGTH_LONG).show();
+
         }else {
             Toast.makeText(DomainsActivity.this, "No DomainServices found!", Toast.LENGTH_LONG).show();
         }
@@ -132,18 +161,44 @@ public class DomainsActivity extends AppCompatActivity implements View.OnClickLi
         progressBar.setVisibility(show ==false ? View.GONE : View.VISIBLE);
 
     }
+    private void ShowColorMeaningDialog() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.color_meaning_dialog, null);
+        dialogBuilder.setView(dialogView);
+
+        dialogBuilder.setTitle("معاني ألوان التقييم");
+        dialogBuilder.setNegativeButton("إخفاء", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+            }
+        });
+        AlertDialog b = dialogBuilder.create();
+        b.show();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.user_options, menu);
+        if(RoleId >1){
+            inflater.inflate(R.menu.admin_options,menu);
+        }else{
+            inflater.inflate(R.menu.user_options, menu);
+        }
         return true;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
+
         switch (item.getItemId()) {
             case R.id.profile:
                 MoveToProfile();
+                return true;
+            case R.id.forms:
+                MoveToForms();
+                return true;
+            case  R.id.colormeaning:
+                ShowColorMeaningDialog();
                 return true;
             case R.id.logout:
                 Logout();
@@ -151,6 +206,10 @@ public class DomainsActivity extends AppCompatActivity implements View.OnClickLi
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+    private void MoveToForms() {
+        Intent toFormsActivit = new Intent(this,FormsActivity.class);
+        startActivity(toFormsActivit);
     }
 
     private void Logout() {
@@ -162,7 +221,23 @@ public class DomainsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void MoveToProfile() {
-        Intent  i = new Intent(this,ProfileActivity.class);
+        sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        int userId = sharedPreferences.getInt("UserId",0);
+        SharedPreferences.Editor editor =sharedPreferences.edit();
+        editor.putInt("Target",userId);
+        editor.commit();
+        UserModel model = new UserModel();
+        model.setUserid(sharedPreferences.getInt("UserId",0));
+        model.setUserFullName(sharedPreferences.getString("UserFullName",""));
+        model.setUserAcadmicID(sharedPreferences.getString("UserAcadmicID",""));
+        model.setEmail(sharedPreferences.getString("email",""));
+        model.setQf(sharedPreferences.getString("QF",""));
+        model.setuserExp(sharedPreferences.getString("EXP",""));
+        model.setEmpName(sharedPreferences.getString("empName",""));
+        model.setSp(sharedPreferences.getString("sp",""));
+        model.setMobile(sharedPreferences.getString("mobile",""));
+        Intent  i = new Intent(this,UserInfoActivity.class);
+        i.putExtra("userModel",model);
         startActivity(i);
     }
 

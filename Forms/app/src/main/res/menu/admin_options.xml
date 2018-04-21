@@ -2,9 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/profile"
         android:title="بياناتي"/>
-    <item android:id="@+id/forms" android:title="النماذج" />
     <item android:id="@+id/colormeaning" android:title="معاني ألوان التقييم" />
-       <!-- android:showAsAction="ifRoom"/>-->
+    <!-- android:showAsAction="ifRoom"/>-->
     <item android:id="@+id/logout"
         android:title="تسجيل الخروج" />
 </menu>

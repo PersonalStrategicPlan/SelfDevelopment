@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,9 +24,11 @@ import com.api_l.forms.UserInfoActivity;
 
 import java.util.ArrayList;
 
+
 public class UsersAdapter extends ArrayAdapter<UserModel> implements View.OnClickListener, NoticeDialogListener {
     private ArrayList<UserModel> userModels = new ArrayList<UserModel>();
     private Context ctx;
+    private SharedPreferences sharedPreferences;
     private Activity activity;
     public UsersAdapter(@NonNull Context context, @NonNull ArrayList<UserModel> objects, Activity activity) {
         super(context,0, objects);
@@ -63,6 +66,10 @@ public class UsersAdapter extends ArrayAdapter<UserModel> implements View.OnClic
 
             case R.id.goalShowDetails:
                 Intent intent = new Intent(this.activity,UserInfoActivity.class);
+                this.sharedPreferences = activity.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt("Target",model.getUserid());
+                editor.commit();
                intent.putExtra("userModel",model);
                 ctx.startActivity(intent);
                 break;
@@ -82,13 +89,16 @@ public class UsersAdapter extends ArrayAdapter<UserModel> implements View.OnClic
 
     }
 
+    @Override
+    public void GoalSelected(String value) {
+
+    }
 
 
     @org.jetbrains.annotations.Contract("null -> false")
     private boolean MoveToGoalActivity(GoalModel goalModel)
     {
 
-        // GoalActivity activity = new GoalActivity(goalModel);
         Intent intent = new Intent(this.activity,GoalActivity.class);
         intent.putExtra("goal",goalModel);
         ctx.startActivity(intent);

@@ -32,7 +32,7 @@ public class DomainModel implements Serializable {
     @SerializedName("goals")
     @Expose
     private List<Object> goals = null;
-
+public  Integer getDomainID(){return  this.domainId;}
     public Integer getDomainId() {
         return Domains_domainId;
     }

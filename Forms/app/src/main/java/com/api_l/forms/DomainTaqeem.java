@@ -1,12 +1,15 @@
 package com.api_l.forms;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,6 +22,7 @@ import android.widget.Toast;
 import com.api_l.forms.APIs.ApiUtils;
 import com.api_l.forms.APIs.TaqeemServices;
 import com.api_l.forms.Models.TaqeemModel;
+import com.api_l.forms.Models.UserModel;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -34,6 +38,9 @@ public class DomainTaqeem extends AppCompatActivity {
     private TextView t1,t2,t3,t4,t5,taqeemTitle,percentagetxt;
     private ImageView soHappy,happy,avarage,notHappy,sad;
     private boolean isFormTaqeem = false;
+    private String title;
+
+    private int RoleId = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +48,10 @@ public class DomainTaqeem extends AppCompatActivity {
         setContentView(R.layout.activity_domain_taqeem);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        domainId = (int) getIntent().getIntExtra("domainId",0); //
-        formId = (int) getIntent().getIntExtra("formId",0); //
-        countOfgoals = (int) getIntent().getIntExtra("countOfGoals",0); //
+        domainId = (int) getIntent().getIntExtra("domainId",0);
+        formId = (int) getIntent().getIntExtra("formId",0);
+        countOfgoals = (int) getIntent().getIntExtra("countOfGoals",0);
+        title = (String) getIntent().getStringExtra("title");
         isFormTaqeem =(boolean) getIntent().getBooleanExtra("isFormTaqeem",false);
         progressBar = (ProgressBar) findViewById(R.id.taqeemProgressBar);
         t1 = (TextView) findViewById(R.id.soHappyCount);
@@ -59,6 +67,9 @@ public class DomainTaqeem extends AppCompatActivity {
         sad = (ImageView)findViewById(R.id.imageView5);
 
        taqeemTitle = (TextView) findViewById(R.id.taqeemTitle);
+        sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        RoleId = sharedPreferences.getInt("RoleId",0);
+
 
         showProgress(true);
         ShowTaqeem();
@@ -86,10 +97,11 @@ public class DomainTaqeem extends AppCompatActivity {
             int userid = getUserId();
             taqeemServices = ApiUtils.Taqeem();
             if(isFormTaqeem){
-                taqeemTitle.setText("التقييم على مستوى التمرين");
+                taqeemTitle.setText(getResources().getString(R.string.EvaluationFormsTitle) + " :"+title);
                 Call call = taqeemServices.GetFormTaqeem(userid, formId);
                 new LoadTaqeem().execute(call);
             }else{
+                taqeemTitle.append(": "+title);
             Call call = taqeemServices.GetDomainTaqeem(userid, domainId);
             new LoadTaqeem().execute(call);
             }
@@ -120,7 +132,7 @@ public class DomainTaqeem extends AppCompatActivity {
                 taqeemModel =responseBody.body();
                 return  taqeemModel;
             } catch (IOException e) {
-                //  Toast.makeText(FormsActivity.this, "Try again please!", Toast.LENGTH_LONG).show();
+
                 e.printStackTrace();
             }
 
@@ -133,7 +145,7 @@ public class DomainTaqeem extends AppCompatActivity {
             if(taqeemModel.getAvaCount() != null){
                 UpdateView(taqeemModel);
             }else {
-                Toast.makeText(DomainTaqeem.this, "لا يوجد تقييم مسجل لحد الآن!", Toast.LENGTH_LONG).show();
+                Toast.makeText(DomainTaqeem.this, getResources().getString(R.string.NoEvaluationFoundYet), Toast.LENGTH_LONG).show();
             }
         }
 
@@ -144,13 +156,21 @@ public class DomainTaqeem extends AppCompatActivity {
         }
     }
     private void UpdateView(TaqeemModel taqeemModel) {
-        if(taqeemModel!=null){
-            t1.setText("عدد التقييمات : "+taqeemModel.getSoHappyCount().toString() + " - "+"النسبة : "+ new DecimalFormat("##.##").format((((double)taqeemModel.getSoHappyCount()/15)*100))+" %");
-            t2.setText("عدد التقييمات : "+taqeemModel.getHappyCount().toString() + " - "+"النسبة : "+ new DecimalFormat("##.##").format((((double)taqeemModel.getHappyCount()/15)*100))+" %");
-            t3.setText("عدد التقييمات : "+taqeemModel.getAvaCount().toString()+ " - "+"النسبة : "+ new DecimalFormat("##.##").format((((double)taqeemModel.getAvaCount()/15)*100))+" %");
-            t4.setText("عدد التقييمات : "+taqeemModel.getNotHappyCount().toString()+ " - "+"النسبة : "+ new DecimalFormat("##.##").format((((double)taqeemModel.getNotHappyCount()/15)*100))+" %");
-            t5.setText("عدد التقييمات : "+taqeemModel.getSadCount().toString()+ " - "+"النسبة :"+ new DecimalFormat("##.##").format((((double)taqeemModel.getSadCount()/15)*100))+" %");
-            //percentagetxt.setText(taqeemModel.getPercentage().toString()+" %");
+        if(taqeemModel!=null && isFormTaqeem == false){
+            t1.setText(getResources().getString(R.string.EvaluationCount)+taqeemModel.getSoHappyCount().toString() + " - "+getResources().getString(R.string.Percentage)+ new DecimalFormat("##.##").format((((double)taqeemModel.getSoHappyCount()/15)*100))+" %");
+            t2.setText(getResources().getString(R.string.EvaluationCount)+taqeemModel.getHappyCount().toString() + " - "+getResources().getString(R.string.Percentage)+ new DecimalFormat("##.##").format((((double)taqeemModel.getHappyCount()/15)*100))+" %");
+            t3.setText(getResources().getString(R.string.EvaluationCount)+taqeemModel.getAvaCount().toString()+ " - "+getResources().getString(R.string.Percentage)+ new DecimalFormat("##.##").format((((double)taqeemModel.getAvaCount()/15)*100))+" %");
+            t4.setText(getResources().getString(R.string.EvaluationCount)+taqeemModel.getNotHappyCount().toString()+ " - "+getResources().getString(R.string.Percentage)+ new DecimalFormat("##.##").format((((double)taqeemModel.getNotHappyCount()/15)*100))+" %");
+            t5.setText(getResources().getString(R.string.EvaluationCount)+taqeemModel.getSadCount().toString()+ " - "+getResources().getString(R.string.Percentage)+ new DecimalFormat("##.##").format((((double)taqeemModel.getSadCount()/15)*100))+" %");
+
+        }
+       else{
+            t1.setText(getResources().getString(R.string.EvaluationCount)+taqeemModel.getSoHappyCount().toString() + " - "+getResources().getString(R.string.Percentage)+ new DecimalFormat("##.##").format((((double)taqeemModel.getSoHappyCount()/90)*100))+" %");
+            t2.setText(getResources().getString(R.string.EvaluationCount)+taqeemModel.getHappyCount().toString() + " - "+getResources().getString(R.string.Percentage)+ new DecimalFormat("##.##").format((((double)taqeemModel.getHappyCount()/90)*100))+" %");
+            t3.setText(getResources().getString(R.string.EvaluationCount)+taqeemModel.getAvaCount().toString()+ " - "+getResources().getString(R.string.Percentage)+ new DecimalFormat("##.##").format((((double)taqeemModel.getAvaCount()/90)*100))+" %");
+            t4.setText(getResources().getString(R.string.EvaluationCount)+taqeemModel.getNotHappyCount().toString()+ " - "+getResources().getString(R.string.Percentage)+ new DecimalFormat("##.##").format((((double)taqeemModel.getNotHappyCount()/90)*100))+" %");
+            t5.setText(getResources().getString(R.string.EvaluationCount)+taqeemModel.getSadCount().toString()+ " - "+getResources().getString(R.string.Percentage)+ new DecimalFormat("##.##").format((((double)taqeemModel.getSadCount()/90)*100))+" %");
+
         }
     }
     private void showProgress(boolean show) {
@@ -160,22 +180,53 @@ public class DomainTaqeem extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.user_options, menu);
+        if(RoleId >1){
+            inflater.inflate(R.menu.admin_options,menu);
+        }else{
+            inflater.inflate(R.menu.user_options, menu);
+        }
         return true;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
+
         switch (item.getItemId()) {
             case R.id.profile:
                 MoveToProfile();
                 return true;
+            case  R.id.colormeaning:
+                ShowColorMeaningDialog();
+                return true;
             case R.id.logout:
                 Logout();
+                return true;
+            case  R.id.forms:
+                MoveToForms();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+    private void MoveToForms() {
+        Intent toFormsActivit = new Intent(this,FormsActivity.class);
+        startActivity(toFormsActivit);
+    }
+
+    private void ShowColorMeaningDialog() {
+        String DialogTitle = getResources().getString(R.string.EvaluationRanksMeaning);
+        String DialogHide = getResources().getString(R.string.HIDE);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.color_meaning_dialog, null);
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.setTitle(DialogTitle);
+        dialogBuilder.setNegativeButton(DialogHide, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+            }
+        });
+        AlertDialog b = dialogBuilder.create();
+        b.show();
     }
 
     private void Logout() {
@@ -187,7 +238,23 @@ public class DomainTaqeem extends AppCompatActivity {
     }
 
     private void MoveToProfile() {
-        Intent  i = new Intent(this,ProfileActivity.class);
+        sharedPreferences = getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        int userId = sharedPreferences.getInt("UserId",0);
+        SharedPreferences.Editor editor =sharedPreferences.edit();
+        editor.putInt("Target",userId);
+        editor.commit();
+        UserModel model = new UserModel();
+        model.setUserid(sharedPreferences.getInt("UserId",0));
+        model.setUserFullName(sharedPreferences.getString("UserFullName",""));
+        model.setUserAcadmicID(sharedPreferences.getString("UserAcadmicID",""));
+        model.setEmail(sharedPreferences.getString("email",""));
+        model.setQf(sharedPreferences.getString("QF",""));
+        model.setuserExp(sharedPreferences.getString("EXP",""));
+        model.setEmpName(sharedPreferences.getString("empName",""));
+        model.setSp(sharedPreferences.getString("sp",""));
+        model.setMobile(sharedPreferences.getString("mobile",""));
+        Intent  i = new Intent(this,UserInfoActivity.class);
+        i.putExtra("userModel",model);
         startActivity(i);
     }
 

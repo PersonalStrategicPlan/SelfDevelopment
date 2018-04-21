@@ -165,4 +165,5 @@
         app:layout_constraintRight_toLeftOf="@+id/prj1lbl"
         android:layout_marginTop="40dp"
         app:layout_constraintTop_toBottomOf="@+id/indecatorTxt" />
+
 </android.support.constraint.ConstraintLayout>
